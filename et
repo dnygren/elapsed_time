@@ -1,0 +1,120 @@
+#! /bin/bash
+################################################################################
+# et: Wrapper script to print out a command's elapsed execution time etc.
+#
+# Created by: Dan Nygren
+# Email: dan.nygren@gmail.com
+# Permanent Email: Dan.Nygren@alumni.clemson.edu
+#
+# Copyright 2019 by Daniel C. Nygren
+#
+#   "Making" code can take a long time and produces a lot of output. I tend
+# to forget what command I executed after I come back to the terminal window,
+# (I share my command history among terminals, so backtracking through that
+# is not a reliable option) as well as forgetting what directory invoked
+# make in. This wrapper script prints out how long a command took to execute
+# along with where the command was executed and what the command was along with
+# the host (build server) it was run on.
+#
+# CALLING SEQUENCE      et (command with options to be executed)
+#
+# EXAMPLES              et make
+#                       et dmake
+#                       et dmake -e COMPILER=GNU
+#                       et dmake clean
+#                       et dmake lint
+#
+# TARGET SYSTEM         Build servers
+#
+# DEVELOPMENT SYSTEM    Solaris 11
+#
+# CALLS                 ~/$FUNCTIONS, date, perl, tput
+#
+# CALLED BY             N/A
+#
+# INPUTS                command to be executed and its arguments
+#
+# OUTPUTS               start and end time, directory, command executed,
+#                       hostname, elapsed time
+#
+# RETURNS               N/A
+#
+# ERROR HANDLING        None
+#
+# WARNINGS              (1. Describe anything a maintainer should be aware of)
+#                       (2. Describe anything a maintainer should be aware of)
+#                       (N. Describe anything a maintainer should be aware of)
+#
+################################################################################
+
+# The name of your shell functions file
+# ksh functions file
+#FUNCTIONS=".functions"
+# bash functions file
+FUNCTIONS=".bash_functions"
+
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# ^^^^^^^^^^ Place code that may need modification above this point. ^^^^^^^^^^
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+# Access home directory functions
+# I have functions that just alias the version of "make" I want to use
+# (e.g. dmake is a function for /ws/onnv-tools/SUNWspro/SS12/bin/dmake),
+# so load the functions so I can access the "alias" from this script.
+# ##########################################################################
+# # Example ksh functions from a ~/.functions file that allow me to "alias"
+# # the make I want to use so I can call them from another script like "et".
+# ##########################################################################
+# function dmake
+# {
+#   # $@ used to accept "dmake lint" "dmake clean" etc.
+#   /ws/onnv-tools/SUNWspro/SS12/bin/dmake $@
+# }
+# function dmakeg
+# {
+#   /ws/onnv-tools/SUNWspro/SS12/bin/dmake -e COMPILER=GNU $@
+# }
+
+if [ -r $HOME/$FUNCTIONS ] # If ~/.functions file exists and is readable
+    then
+    echo "Loading $HOME/$FUNCTIONS file."
+    . ~/$FUNCTIONS
+    else
+    echo "Did not find a $HOME/$FUNCTIONS file to load."
+fi
+
+# Getting the starting time
+START=$( date )
+START_SECONDS=$( perl -e 'print time' )
+# Not all systems have /usr/ccs/bin/date installed
+# but all systems seem to have perl installed somewhere
+#START_SECONDS=$( /usr/ccs/bin/date +'%s' )
+
+# Execute positional parameters from 1 on (i.e. not this script, which
+# is positional parameter 0 )
+$@
+
+# Getting the ending time
+END=$( date )
+END_SECONDS=$( perl -e 'print time' )
+# Not all systems have /usr/ccs/bin/date installed
+# but all systems seem to have perl installed somewhere
+#END_SECONDS=$( /usr/ccs/bin/date +'%s' )
+
+# Print out some useful information at the end of execution
+echo "Start time: $START"
+echo "End time  : $END"
+echo "Host name : $HOSTNAME"
+# I tend to mix up what directory I'm in, which causes real problems
+# when I debug the wrong problem, so print the directory in bold
+tput bold
+echo "Directory : $PWD"
+tput sgr0
+echo "Command executed : $@"
+# Calculate elapsed time
+elapsed_time_secs=$((END_SECONDS-START_SECONDS))
+echo "Elapsed time in seconds: $elapsed_time_secs"
+elapsed_time_mins=$(( $elapsed_time_secs / 60 ))
+elapsed_time_fraction=$(( $elapsed_time_secs % 60 ))
+printf "Elapsed time min & secs: %d:%02d \n" $elapsed_time_mins \
+$elapsed_time_fraction
