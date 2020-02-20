@@ -1,1 +1,17 @@
 Read the comment header block of et for an explanation of this program.
+
+Example output:
+
+$ et make all
+Loading /home/nygren/.bash_functions file.
+.
+.
+.
+make[1]: Leaving directory '/home/nygren/SW/GitLab/Project'
+Start time: Wed Feb 19 09:11:53 PST 2020
+End time  : Wed Feb 19 09:12:32 PST 2020
+Host name : mmo-proc
+Directory : /home/nygren/SW/GitLab/Project
+Command executed : make all
+Elapsed time in seconds: 39
+Elapsed time min & secs: 0:39

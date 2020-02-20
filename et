@@ -4,17 +4,16 @@
 #
 # Created by: Dan Nygren
 # Email: dan.nygren@gmail.com
-# Permanent Email: Dan.Nygren@alumni.clemson.edu
 #
 # Copyright 2019 by Daniel C. Nygren
 #
 #   "Making" code can take a long time and produces a lot of output. I tend
 # to forget what command I executed after I come back to the terminal window,
 # (I share my command history among terminals, so backtracking through that
-# is not a reliable option) as well as forgetting what directory invoked
-# make in. This wrapper script prints out how long a command took to execute
-# along with where the command was executed and what the command was along with
-# the host (build server) it was run on.
+# is not a reliable option) as well as forgetting what directory I invoked
+# make in. This wrapper script prints out when and how long a command took to
+# execute along with where the command was executed and what the command was
+# along with the host (build server) it was run on.
 #
 # CALLING SEQUENCE      et (command with options to be executed)
 #
